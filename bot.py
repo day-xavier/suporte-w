@@ -15,15 +15,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("Comando /start recebido")
 
     await update.message.reply_text(
-        """Olá! Seja bem-vindo ao suporte!
+        """🔮 Olá! Seja bem-vindo ao mágico suporte!
 
-Como posso te ajudar?
+Como podemos te ajudar?
 
-Caso esteja enfrentando algum problema ou tenha encontrado algum erro, utilize o comando /reportar para relatar o ocorrido.
+Caso esteja enfrentando algum problema, tenha encontrado algum erro, queira fazer uma sugestão ou realizar uma denúncia, utilize o comando /reportar para relatar o ocorrido.
 
-Ao relatar um problema, tente explicar com o máximo de detalhes possível para que possamos te ajudar melhor.
+Ao relatar um problema, tente explicar a situação com o máximo de detalhes possível, para que possamos te ajudar da melhor forma.
 
-Obrigado por entrar em contato!"""
+Agradecemos por entrar em contato! 💚
+Esperamos que você tenha uma ótima jornada em nosso bot. 🪄✨"""
     )
 
 
