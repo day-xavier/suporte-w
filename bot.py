@@ -464,32 +464,42 @@ async def excluir(update: Update, context: ContextTypes.DEFAULT_TYPE):
     thread_id = update.message.message_thread_id
 
     try:
-        # Nome do tópico antes de excluir
-        nome_topico = update.message.chat.title or "Suporte"
+        # ⭐ NOVO: Pegar o nome do tópico corretamente
+        forum_topic = await context.bot.get_forum_topic(
+            chat_id=chat_id,
+            message_thread_id=thread_id
+        )
+        nome_topico = forum_topic.name
 
-        # Notifica antes de excluir
+        # Primeiro, fecha o tópico
+        await context.bot.close_forum_topic(
+            chat_id=chat_id,
+            message_thread_id=thread_id
+        )
+
+        # Depois, deleta o tópico
+        await context.bot.delete_forum_topic(
+            chat_id=chat_id,
+            message_thread_id=thread_id
+        )
+
+        # Notifica no tópico de notificações
         await context.bot.send_message(
             chat_id=grupo_suporte,
             message_thread_id=topico_notificacoes,
             text=(
                 "🗑️ TÓPICO DE SUPORTE EXCLUÍDO\n\n"
-                f"📂 Tópico: {nome_topico}\n"
+                f"📂 Tópico: {nome_topico}\n"  # ⭐ CORRIGIDO
                 f"🆔 ID: {thread_id}\n\n"
                 "O tópico foi excluído manualmente."
             )
-        )
-
-        # Exclui o tópico
-        await context.bot.delete_forum_topic(
-            chat_id=chat_id,
-            message_thread_id=thread_id
         )
 
         await update.message.reply_text(
             "🗑️ Tópico excluído com sucesso!"
         )
 
-        print(f"Tópico {thread_id} excluído manualmente.")
+        print(f"Tópico '{nome_topico}' (ID: {thread_id}) excluído manualmente.")
 
     except Exception as erro:
         erro_str = str(erro)
