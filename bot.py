@@ -85,7 +85,10 @@ async def reportar(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         thread_id = topico.message_thread_id
         # Guarda qual usuário pertence a este atendimento
-        atendimentos[thread_id] = usuario.id
+        atendimentos[thread_id] = {
+        "usuario_id": usuario.id,
+        "nome_topico": f"Suporte - {usuario.first_name}"
+        }
         # Agenda a primeira verificação de falta de resposta
         context.job_queue.run_once(
         notificar_sem_resposta,
@@ -163,7 +166,7 @@ async def responder_moderador(update: Update, context: ContextTypes.DEFAULT_TYPE
         return
 
     # Descobre qual usuário abriu esse atendimento
-    usuario_id = atendimentos[thread_id]
+    usuario_id = atendimentos[thread_id]["usuario_id"]
 
     try:
 
@@ -464,11 +467,18 @@ async def excluir(update: Update, context: ContextTypes.DEFAULT_TYPE):
     thread_id = update.message.message_thread_id
 
     try:
-        # Pegar nome do tópico
-        nome_topico = update.message.chat.title or f"Tópico {thread_id}"
+        # ⭐ NOVO: Procurar o nome do tópico no dicionário
+        nome_topico = None
+        for tid, dados in atendimentos.items():
+            if tid == thread_id and isinstance(dados, dict):
+                nome_topico = dados.get("nome_topico", f"Tópico {thread_id}")
+                break
+        
+        # Se não encontrar, usar valor padrão
+        if nome_topico is None:
+            nome_topico = f"Suporte - Tópico {thread_id}"
 
-        # ⭐ REMOVER: await context.bot.close_forum_topic()
-        # Direto para deletar
+        # Deletar tópico
         await context.bot.delete_forum_topic(
             chat_id=chat_id,
             message_thread_id=thread_id
@@ -480,7 +490,7 @@ async def excluir(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_thread_id=topico_notificacoes,
             text=(
                 "🗑️ TÓPICO DE SUPORTE EXCLUÍDO\n\n"
-                f"📂 Tópico: {nome_topico}\n"
+                f"📂 Tópico: {nome_topico}\n"  # ⭐ CORRETO
                 f"🆔 ID: {thread_id}\n\n"
                 "O tópico foi excluído manualmente."
             )
@@ -499,20 +509,6 @@ async def excluir(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(
                 "❌ Tópico não encontrado ou já foi excluído."
             )
-        elif "Topic_not_modified" in erro_str:
-            # ⭐ NOVO: Se já está fechado, só deleta mesmo assim
-            try:
-                await context.bot.delete_forum_topic(
-                    chat_id=chat_id,
-                    message_thread_id=thread_id
-                )
-                await update.message.reply_text(
-                    "🗑️ Tópico excluído com sucesso!"
-                )
-            except:
-                await update.message.reply_text(
-                    "❌ Não foi possível excluir o tópico."
-                )
         else:
             await update.message.reply_text(
                 "❌ Não foi possível excluir o tópico."
