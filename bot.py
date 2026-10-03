@@ -1,12 +1,20 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
+import os
+from dotenv import load_dotenv
 
-# NÃO VAZAR TOKEN!
-TOKEN = "8345870648:AAHtBBwUz5BD6GI91_AhjxTYqFUCyIMXGCE"
+# Carregar variáveis do .env
+load_dotenv()
 
-# Ids dos grupos e tópicos do bot (Adquiridos ao usar /id)
-grupo_suporte = -1004300089830
-topico_notificacoes = 46
+TOKEN = os.getenv("BOT_TOKEN")
+grupo_suporte = int(os.getenv("GRUPO_SUPORTE"))
+topico_notificacoes = int(os.getenv("TOPICO_NOTIFICACOES"))
+
+# Verificar se token foi carregado
+if not TOKEN:
+    raise ValueError("❌ BOT_TOKEN não configurado em .env")
+
+print("✅ Token carregado com segurança!")
 # Armazenar a relação entre tópico e o usuário
 atendimentos = {}
 # Tempo para notificar sobre o tópico fechado
