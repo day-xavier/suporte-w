@@ -464,16 +464,11 @@ async def excluir(update: Update, context: ContextTypes.DEFAULT_TYPE):
     thread_id = update.message.message_thread_id
 
     try:
-        # ⭐ NOVO: Pegar nome do chat (que é o nome do tópico)
+        # Pegar nome do tópico
         nome_topico = update.message.chat.title or f"Tópico {thread_id}"
 
-        # Primeiro, fecha o tópico
-        await context.bot.close_forum_topic(
-            chat_id=chat_id,
-            message_thread_id=thread_id
-        )
-
-        # Depois, deleta o tópico
+        # ⭐ REMOVER: await context.bot.close_forum_topic()
+        # Direto para deletar
         await context.bot.delete_forum_topic(
             chat_id=chat_id,
             message_thread_id=thread_id
@@ -504,6 +499,20 @@ async def excluir(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(
                 "❌ Tópico não encontrado ou já foi excluído."
             )
+        elif "Topic_not_modified" in erro_str:
+            # ⭐ NOVO: Se já está fechado, só deleta mesmo assim
+            try:
+                await context.bot.delete_forum_topic(
+                    chat_id=chat_id,
+                    message_thread_id=thread_id
+                )
+                await update.message.reply_text(
+                    "🗑️ Tópico excluído com sucesso!"
+                )
+            except:
+                await update.message.reply_text(
+                    "❌ Não foi possível excluir o tópico."
+                )
         else:
             await update.message.reply_text(
                 "❌ Não foi possível excluir o tópico."
