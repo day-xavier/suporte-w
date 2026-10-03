@@ -451,6 +451,61 @@ async def fechar(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(f"Erro ao fechar tópico: {erro}")
 
 
+# /excluir
+async def excluir(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if update.message.message_thread_id is None:
+        await update.message.reply_text(
+            "Este comando precisa ser usado dentro de um tópico."
+        )
+        return
+
+    chat_id = update.effective_chat.id
+    thread_id = update.message.message_thread_id
+
+    try:
+        # Nome do tópico antes de excluir
+        nome_topico = update.message.chat.title or "Suporte"
+
+        # Notifica antes de excluir
+        await context.bot.send_message(
+            chat_id=grupo_suporte,
+            message_thread_id=topico_notificacoes,
+            text=(
+                "🗑️ TÓPICO DE SUPORTE EXCLUÍDO\n\n"
+                f"📂 Tópico: {nome_topico}\n"
+                f"🆔 ID: {thread_id}\n\n"
+                "O tópico foi excluído manualmente."
+            )
+        )
+
+        # Exclui o tópico
+        await context.bot.delete_forum_topic(
+            chat_id=chat_id,
+            message_thread_id=thread_id
+        )
+
+        await update.message.reply_text(
+            "🗑️ Tópico excluído com sucesso!"
+        )
+
+        print(f"Tópico {thread_id} excluído manualmente.")
+
+    except Exception as erro:
+        erro_str = str(erro)
+        
+        if "Topic_not_found" in erro_str or "BadRequest" in erro_str:
+            await update.message.reply_text(
+                "❌ Tópico não encontrado ou já foi excluído."
+            )
+        else:
+            await update.message.reply_text(
+                "❌ Não foi possível excluir o tópico."
+            )
+        
+        print(f"Erro ao excluir tópico: {erro}")
+        
+
 # /id
 async def id_grupo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
