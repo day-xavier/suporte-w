@@ -464,12 +464,8 @@ async def excluir(update: Update, context: ContextTypes.DEFAULT_TYPE):
     thread_id = update.message.message_thread_id
 
     try:
-        # ⭐ NOVO: Pegar o nome do tópico corretamente
-        forum_topic = await context.bot.get_forum_topic(
-            chat_id=chat_id,
-            message_thread_id=thread_id
-        )
-        nome_topico = forum_topic.name
+        # ⭐ NOVO: Pegar nome do chat (que é o nome do tópico)
+        nome_topico = update.message.chat.title or f"Tópico {thread_id}"
 
         # Primeiro, fecha o tópico
         await context.bot.close_forum_topic(
@@ -489,7 +485,7 @@ async def excluir(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message_thread_id=topico_notificacoes,
             text=(
                 "🗑️ TÓPICO DE SUPORTE EXCLUÍDO\n\n"
-                f"📂 Tópico: {nome_topico}\n"  # ⭐ CORRIGIDO
+                f"📂 Tópico: {nome_topico}\n"
                 f"🆔 ID: {thread_id}\n\n"
                 "O tópico foi excluído manualmente."
             )
