@@ -426,16 +426,29 @@ async def fechar(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         print("Tópico fechado com sucesso!")
         print(f"ID do tópico: {thread_id}")
-        print(f"Notificação programada para: {tempo_notificacao} segundos")
-        print(f"Exclusão programada para: {tempo_deleteTopico} segundos")
 
     except Exception as erro:
-        print("Erro ao fechar tópico:")
-        print(erro)
-
-        await update.message.reply_text(
-            "Não foi possível fechar o tópico."
-        )
+        # ⭐ NOVO: Verificar tipo de erro
+        erro_str = str(erro)
+        
+        if "Topic_not_modified" in erro_str:
+            await update.message.reply_text(
+                "⚠️ Este tópico já está fechado ou não pode ser fechado."
+            )
+            print(f"Tópico {thread_id} já estava fechado.")
+        
+        elif "BadRequest" in erro_str or "Forbidden" in erro_str:
+            await update.message.reply_text(
+                "❌ O bot não tem permissão para fechar tópicos.\n"
+                "Certifique-se de que o bot é admin do grupo."
+            )
+            print(f"Erro de permissão ao fechar tópico {thread_id}")
+        
+        else:
+            await update.message.reply_text(
+                "❌ Não foi possível fechar o tópico."
+            )
+            print(f"Erro ao fechar tópico: {erro}")
 
 
 # /id
