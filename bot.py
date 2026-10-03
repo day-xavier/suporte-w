@@ -523,6 +523,7 @@ app.add_handler(CommandHandler("reportar", reportar))
 app.add_handler(CommandHandler("responder", responder))
 app.add_handler(CommandHandler("id", id_grupo))
 app.add_handler(CommandHandler("fechar", fechar))
+app.add_handler(CommandHandler("excluir", excluir))
 
 print("Bot iniciado!")
 
