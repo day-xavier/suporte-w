@@ -7,9 +7,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TOKEN = os.getenv("BOT_TOKEN")
-grupo_suporte = int(os.getenv("GRUPO_SUPORTE"))
-topico_notificacoes = int(os.getenv("TOPICO_NOTIFICACOES"))
+grupo_suporte_env = os.getenv("GRUPO_SUPORTE")
+topico_notificacoes_env = os.getenv("TOPICO_NOTIFICACOES")
 
+if not grupo_suporte_env or not topico_notificacoes_env:
+    raise ValueError("❌ GRUPO_SUPORTE e TOPICO_NOTIFICACOES precisam estar configurados no .env")
+
+grupo_suporte = int(grupo_suporte_env)
+topico_notificacoes = int(topico_notificacoes_env)
 # Verificar se token foi carregado
 if not TOKEN:
     raise ValueError("❌ BOT_TOKEN não configurado em .env")
